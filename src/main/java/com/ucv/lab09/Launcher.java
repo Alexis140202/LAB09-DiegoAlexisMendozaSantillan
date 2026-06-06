@@ -1,9 +1,8 @@
 package com.ucv.lab09;
 
-import javafx.application.Application;
-
 public class Launcher {
     public static void main(String[] args) {
-        Application.launch(MainApplication.class, args);
+        // Redirige el arranque hacia MainApplication evitando conflictos de JavaFX
+        MainApplication.main(args);
     }
 }

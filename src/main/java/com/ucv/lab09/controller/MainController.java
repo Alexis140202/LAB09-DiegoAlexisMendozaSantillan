@@ -1,107 +1,147 @@
 package com.ucv.lab09.controller;
 
-import com.ucv.lab09.model.EmpleadoPermanente;
-import com.ucv.lab09.model.EmpleadoVendedor;
-import com.ucv.lab09.service.IEmpleadoService;
-import javafx.application.Platform;
+import com.ucv.lab09.model.Estudiante;
+import com.ucv.lab09.model.EstudiantePreGrado;
+import com.ucv.lab09.model.EstudiantePostGrado;
+import com.ucv.lab09.service.EstudianteService;
+import com.ucv.lab09.service.IEstudianteService;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 
 public class MainController {
 
-    // --- Campos Tab Empleado Vendedor ---
-    @FXML private TextField txtDniVendedor;
-    @FXML private TextField txtNombresVendedor;
-    @FXML private TextField txtApellidosVendedor;
-    @FXML private TextField txtTasaComision;
-    @FXML private TextField txtMontoVendido;
-    @FXML private TextArea  txtAreaVendedor;
+    private final IEstudianteService estudianteService = new EstudianteService();
 
-    // --- Campos Tab Empleado Permanente ---
-    @FXML private TextField txtDniPermanente;
-    @FXML private TextField txtApellidosPermanente;
-    @FXML private TextField txtNombresPermanente;
-    @FXML private TextField txtSueldoBase;
-    @FXML private ComboBox<String> cmbAfiliacion;
-    @FXML private TextArea  txtAreaPermanente;
+    // --- Componentes de la pestaña: Estudiante Pregrado ---
+    @FXML private TextField txtNombresPre;
+    @FXML private TextField txtApellidosPre;
+    @FXML private ComboBox<String> cmbSemestrePre;
+    @FXML private ComboBox<String> cmbCategoriaPre;
+    @FXML private ComboBox<String> cmbProcedenciaPre;
+    @FXML private TextField txtPromedioPre;
+    @FXML private TextArea txtAreaPre;
 
-    // Servicio inyectado desde MainApplication
-    private IEmpleadoService empleadoService;
+    // --- Componentes de la pestaña: Estudiante Postgrado ---
+    @FXML private TextField txtNombresPos;
+    @FXML private TextField txtApellidosPos;
+    @FXML private ComboBox<String> cmbSemestrePos;
+    @FXML private ComboBox<String> cmbGradoPos;
+    @FXML private TextArea txtAreaPos;
 
-    public void setEmpleadoService(IEmpleadoService empleadoService) {
-        this.empleadoService = empleadoService;
-    }
-
+    /**
+     * Se ejecuta automáticamente al cargar la vista.
+     * Llena los ComboBox con las opciones de la guía[cite: 80, 85, 93].
+     */
     @FXML
     public void initialize() {
-        cmbAfiliacion.getItems().addAll("AFP", "SNP");
-        cmbAfiliacion.setValue("AFP");
+        // Llenar datos de Pregrado
+        cmbSemestrePre.getItems().addAll("2010-I", "2011-II");
+        cmbCategoriaPre.getItems().addAll("A", "B");
+        cmbProcedenciaPre.getItems().addAll("Estatal", "Particular");
+
+        // Llenar datos de Postgrado
+        cmbSemestrePos.getItems().addAll("2010-I", "2011-II");
+        cmbGradoPos.getItems().addAll("Bachiller", "Titulado");
     }
 
-    // ---- Acciones Empleado Vendedor ----
-
-    @FXML
-    private void onCrearEmpleadoVendedor() {
+    // --- TRATAMIENTO DE EXCEPCIONES PARA DATOS NUMÉRICOS ---
+    private double validarYLeerPromedio() {
         try {
-            String dni       = txtDniVendedor.getText().trim();
-            String nombres   = txtNombresVendedor.getText().trim();
-            String apellidos = txtApellidosVendedor.getText().trim();
-            double tasa      = Double.parseDouble(txtTasaComision.getText().trim());
-            double monto     = Double.parseDouble(txtMontoVendido.getText().trim());
+            String textoPromedio = txtPromedioPre.getText();
+            double promedio = Double.parseDouble(textoPromedio);
 
-            EmpleadoVendedor vendedor = empleadoService.crearEmpleadoVendedor(
-                    dni, apellidos, nombres, monto, tasa);
-            txtAreaVendedor.setText(empleadoService.obtenerInformacion(vendedor));
+            // Validación del rango de calificación peruano
+            if (promedio < 0 || promedio > 20) {
+                throw new IllegalArgumentException("El promedio debe estar entre 0 y 20.");
+            }
+            return promedio;
         } catch (NumberFormatException e) {
-            txtAreaVendedor.setText("Error: ingrese valores numéricos válidos en Tasa y Monto.");
+            mostrarAlertaError("Error de Tipo de Dato", "El promedio ponderado debe ser un número válido (Ej: 15.5).");
+            return -1;
+        } catch (IllegalArgumentException e) {
+            mostrarAlertaError("Rango Inválido", e.getMessage());
+            return -1;
         }
     }
 
-    @FXML
-    private void onBorrarVendedor() {
-        txtDniVendedor.clear();
-        txtNombresVendedor.clear();
-        txtApellidosVendedor.clear();
-        txtTasaComision.clear();
-        txtMontoVendido.clear();
-        txtAreaVendedor.clear();
+    private void mostrarAlertaError(String titulo, String contenido) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(titulo);
+        alert.setHeaderText(null);
+        alert.setContentText(contenido);
+        alert.showAndWait();
     }
 
-    // ---- Acciones Empleado Permanente ----
+    // --- ACCIONES DE LA PESTAÑA: PREGRADO ---
 
     @FXML
-    private void onCrearEmpleadoPermanente() {
-        try {
-            String dni        = txtDniPermanente.getText().trim();
-            String apellidos  = txtApellidosPermanente.getText().trim();
-            String nombres    = txtNombresPermanente.getText().trim();
-            double sueldoBase = Double.parseDouble(txtSueldoBase.getText().trim());
-            String afiliacion = cmbAfiliacion.getValue();
+    void onRegistrarPregrado(ActionEvent event) {
+        double promedio = validarYLeerPromedio();
+        if (promedio == -1) return;
 
-            EmpleadoPermanente permanente = empleadoService.crearEmpleadoPermanente(
-                    dni, apellidos, nombres, sueldoBase, afiliacion);
-            txtAreaPermanente.setText(empleadoService.obtenerInformacion(permanente));
-        } catch (NumberFormatException e) {
-            txtAreaPermanente.setText("Error: ingrese un sueldo base numérico válido.");
+        String nombres = txtNombresPre.getText();
+        String apellidos = txtApellidosPre.getText();
+        String semestre = cmbSemestrePre.getValue() != null ? cmbSemestrePre.getValue() : "2010-I";
+        String categoria = cmbCategoriaPre.getValue() != null ? cmbCategoriaPre.getValue() : "A";
+        String procedencia = cmbProcedenciaPre.getValue() != null ? cmbProcedenciaPre.getValue() : "Estatal";
+
+        if (nombres.isEmpty() || apellidos.isEmpty()) {
+            mostrarAlertaError("Campos Vacíos", "Por favor, complete el nombre y apellido del estudiante.");
+            return;
         }
+
+        // Creación e inserción en el servicio en memoria [cite: 68, 101]
+        Estudiante estPre = new EstudiantePreGrado(apellidos, nombres, semestre, categoria, promedio, procedencia);
+        estudianteService.registrarEstudiante(estPre);
+
+        txtAreaPre.appendText(estPre.mostrarInfo());
     }
 
     @FXML
-    private void onBorrarPermanente() {
-        txtDniPermanente.clear();
-        txtApellidosPermanente.clear();
-        txtNombresPermanente.clear();
-        txtSueldoBase.clear();
-        cmbAfiliacion.setValue("AFP");
-        txtAreaPermanente.clear();
+    void onBorrarPregrado(ActionEvent event) {
+        txtNombresPre.clear();
+        txtApellidosPre.clear();
+        txtPromedioPre.clear();
+        cmbSemestrePre.getSelectionModel().clearSelection();
+        cmbCategoriaPre.getSelectionModel().clearSelection();
+        cmbProcedenciaPre.getSelectionModel().clearSelection();
+        txtAreaPre.clear();
     }
 
-    // ---- Acción compartida ----
+    // --- ACCIONES DE LA PESTAÑA: POSTGRADO ---
 
     @FXML
-    private void onSalir() {
-        Platform.exit();
+    void onRegistrarPostgrado(ActionEvent event) {
+        String nombres = txtNombresPos.getText();
+        String apellidos = txtApellidosPos.getText();
+        String semestre = cmbSemestrePos.getValue() != null ? cmbSemestrePos.getValue() : "2010-I";
+        String grado = cmbGradoPos.getValue() != null ? cmbGradoPos.getValue() : "Bachiller";
+
+        if (nombres.isEmpty() || apellidos.isEmpty()) {
+            mostrarAlertaError("Campos Vacíos", "Por favor, complete el nombre y apellido del estudiante.");
+            return;
+        }
+
+        // Creación utilizando la clase corregida EstudiantePostGrad [cite: 93, 101]
+        Estudiante estPos = new EstudiantePostGrado(apellidos, nombres, semestre, grado);
+        estudianteService.registrarEstudiante(estPos);
+
+        txtAreaPos.appendText(estPos.mostrarInfo());
+    }
+
+    @FXML
+    void onBorrarPostgrado(ActionEvent event) {
+        txtNombresPos.clear();
+        txtApellidosPos.clear();
+        cmbSemestrePos.getSelectionModel().clearSelection();
+        cmbGradoPos.getSelectionModel().clearSelection();
+        txtAreaPos.clear();
+    }
+
+    // --- ACCIÓN COMÚN ---
+    @FXML
+    void onSalir(ActionEvent event) {
+        System.exit(0);
     }
 }
