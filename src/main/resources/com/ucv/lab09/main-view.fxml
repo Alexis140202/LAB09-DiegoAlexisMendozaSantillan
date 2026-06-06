@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.ucv.lab09.controller.MainController"
+            prefWidth="530" prefHeight="450">
+
+    <center>
+        <TabPane tabClosingPolicy="UNAVAILABLE">
+
+            <!-- ==================== TAB: Empleado Vendedor ==================== -->
+            <Tab text="Empleado Vendedor">
+                <VBox spacing="10">
+                    <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+
+                    <!-- Fila 1: DNI | Nombres | Apellidos -->
+                    <GridPane hgap="10" vgap="4">
+                        <columnConstraints>
+                            <ColumnConstraints prefWidth="120"/>
+                            <ColumnConstraints prefWidth="175"/>
+                            <ColumnConstraints prefWidth="175"/>
+                        </columnConstraints>
+
+                        <Label text="DNI" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                        <Label text="Nombres" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                        <Label text="Apellidos" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+
+                        <TextField fx:id="txtDniVendedor"       GridPane.columnIndex="0" GridPane.rowIndex="1" maxWidth="Infinity"/>
+                        <TextField fx:id="txtNombresVendedor"   GridPane.columnIndex="1" GridPane.rowIndex="1" maxWidth="Infinity"/>
+                        <TextField fx:id="txtApellidosVendedor" GridPane.columnIndex="2" GridPane.rowIndex="1" maxWidth="Infinity"/>
+                    </GridPane>
+
+                    <!-- Fila 2: Tasa de Comisión | Monto Vendido -->
+                    <GridPane hgap="10" vgap="4">
+                        <columnConstraints>
+                            <ColumnConstraints prefWidth="120"/>
+                            <ColumnConstraints prefWidth="175"/>
+                        </columnConstraints>
+
+                        <Label text="Tasa de comisión" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                        <Label text="Monto Vendido"    GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
+                        <TextField fx:id="txtTasaComision" GridPane.columnIndex="0" GridPane.rowIndex="1" maxWidth="Infinity"/>
+                        <TextField fx:id="txtMontoVendido" GridPane.columnIndex="1" GridPane.rowIndex="1" maxWidth="Infinity"/>
+                    </GridPane>
+
+                    <!-- Área de resultados -->
+                    <TextArea fx:id="txtAreaVendedor"
+                              prefHeight="170"
+                              editable="false"
+                              wrapText="true"
+                              VBox.vgrow="ALWAYS"/>
+
+                    <!-- Botones -->
+                    <HBox spacing="10" alignment="CENTER">
+                        <Button text="Crear Empleado" onAction="#onCrearEmpleadoVendedor" prefWidth="140"/>
+                        <Button text="Borrar"         onAction="#onBorrarVendedor"        prefWidth="100"/>
+                        <Button text="Salir"          onAction="#onSalir"                 prefWidth="100"/>
+                    </HBox>
+                </VBox>
+            </Tab>
+
+            <!-- ==================== TAB: Empleado Permanente ==================== -->
+            <Tab text="Empleado Permanente">
+                <VBox spacing="10">
+                    <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+
+                    <!-- Fila 1: DNI | Apellidos | Nombres -->
+                    <GridPane hgap="10" vgap="4">
+                        <columnConstraints>
+                            <ColumnConstraints prefWidth="120"/>
+                            <ColumnConstraints prefWidth="175"/>
+                            <ColumnConstraints prefWidth="175"/>
+                        </columnConstraints>
+
+                        <Label text="DNI"       GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                        <Label text="Apellidos" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                        <Label text="Nombres"   GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+
+                        <TextField fx:id="txtDniPermanente"        GridPane.columnIndex="0" GridPane.rowIndex="1" maxWidth="Infinity"/>
+                        <TextField fx:id="txtApellidosPermanente"  GridPane.columnIndex="1" GridPane.rowIndex="1" maxWidth="Infinity"/>
+                        <TextField fx:id="txtNombresPermanente"    GridPane.columnIndex="2" GridPane.rowIndex="1" maxWidth="Infinity"/>
+                    </GridPane>
+
+                    <!-- Fila 2: Sueldo Base | Tipo de Afiliación -->
+                    <GridPane hgap="10" vgap="4">
+                        <columnConstraints>
+                            <ColumnConstraints prefWidth="120"/>
+                            <ColumnConstraints prefWidth="175"/>
+                        </columnConstraints>
+
+                        <Label text="Sueldo Base"       GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                        <Label text="Tipo de Afiliación" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
+                        <TextField       fx:id="txtSueldoBase"  GridPane.columnIndex="0" GridPane.rowIndex="1" maxWidth="Infinity"/>
+                        <ComboBox        fx:id="cmbAfiliacion"  GridPane.columnIndex="1" GridPane.rowIndex="1" maxWidth="Infinity"/>
+                    </GridPane>
+
+                    <!-- Área de resultados -->
+                    <TextArea fx:id="txtAreaPermanente"
+                              prefHeight="170"
+                              editable="false"
+                              wrapText="true"
+                              VBox.vgrow="ALWAYS"/>
+
+                    <!-- Botones -->
+                    <HBox spacing="10" alignment="CENTER">
+                        <Button text="Crear Empleado" onAction="#onCrearEmpleadoPermanente" prefWidth="140"/>
+                        <Button text="Borrar"         onAction="#onBorrarPermanente"        prefWidth="100"/>
+                        <Button text="Salir"          onAction="#onSalir"                   prefWidth="100"/>
+                    </HBox>
+                </VBox>
+            </Tab>
+
+        </TabPane>
+    </center>
+</BorderPane>
